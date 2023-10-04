@@ -1,0 +1,30 @@
+--Implementa la base de datos para el juego, tal y como habéis acordado en el grupo. Recuerda los requisitos básicos:
+--La base de datos multinivel N:M tiene 2 entidades (jugador, partida). La entidad jugador tendrá al menos un campo username 
+--y un campo password. La entidad partida tendrá al menos un identificador de partida, un campo que identificará 
+--la fecha y hora en que termina la partida, la duración de la partida y el ganador de la partida. 
+--Debe tenerse en cuenta que un jugador puede haber jugado varias partidas y que en una partida puede haber varios jugadores.
+--Escribe un programa en C que realice la consulta que te ha tocado en el reparto que habéis hecho en clase.
+-----------------------------------------------------------------------------------------------------------------------------
+
+DROP DATABASE IF EXISTS Juego;
+CREATE DATABASE Juego;
+
+USE Juego;
+
+CREATE TABLE jugador(id INTEGER PRIMARY KEY NOT NULL, username VARCHAR NOT NULL, password VARCHAR NOT NULL);
+
+CREATE TABLE partida(idp INTEGER PRIMARY KEY NOT NULL, ftime DATETIME NOT NULL, time FLOAT NOT NULL, 
+winner INTEGER NOT NULL, FOREIGN KEY(winner) REFERENCES jugador(id));
+
+--el jugador que ha ganado mas partidas en que escenario ha ganado más
+
+SELECT j.username AS jugador,
+       e.nombre AS escenario,
+       COUNT(*) AS partidas_ganadas
+FROM jugador j
+JOIN partida p ON j.id = p.winner
+JOIN jugador_escenario je ON j.id = je.jugador_id
+JOIN escenario e ON je.escenario_id = e.idescenario
+GROUP BY j.username, e.nombre
+ORDER BY COUNT(*) DESC
+LIMIT 1;
